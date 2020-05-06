@@ -139,6 +139,10 @@ contract fun {
         return testByte32;
     }
     
+    function to32Test(bytes32 testByte) view public returns(bytes32){
+        (address Addr , bytes12 _id) = parseId(testByte);
+        return bytesToBytes32(abi.encodePacked(Addr, bytes12(0)),0);
+    }
     
     function parseId(bytes32 _id) internal pure returns (address addr, bytes12 version) {
         bytes32 mask12 = 0xffffffffffffffffffffffff0000000000000000000000000000000000000000;
@@ -146,6 +150,23 @@ contract fun {
 
         addr = address(bytes20(_id&mask20));
         version = bytes12((_id<<(20)*8)&mask12);
+    }
+    
+    
+    function get0ToZ() public view returns(string memory res){
+        bytes memory bytess;
+        for(uint8 i=48;i<=57;i++){ //characters '0' to '9'  are 48-57 in ascii.
+            bytes memory tempBytes = new bytes(1);
+            tempBytes[0] = byte(i);
+            bytess = abi.encodePacked(bytess, tempBytes);
+        }
+        
+        for(uint8 i=65;i<=90;i++){ //characters 'A' to 'Z'  are 65-90 in ascii.
+            bytes memory tempBytes = new bytes(1);
+            tempBytes[0] = byte(i);
+            bytess = abi.encodePacked(bytess, tempBytes);
+        }
+        res = string(bytess);
     }
     
 }
