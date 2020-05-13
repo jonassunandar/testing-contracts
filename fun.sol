@@ -168,5 +168,19 @@ contract fun {
         }
         res = string(bytess);
     }
-    
+    //https://stackoverflow.com/questions/48600347/how-to-reverse-a-string-in-solidity
+    function reverseString(string memory _base) public returns(string memory){
+        bytes memory _baseBytes = bytes(_base);
+        assert(_baseBytes.length > 0);
+
+        string memory _tempValue = new string(_baseBytes.length);
+        bytes memory _newValue = bytes(_tempValue);
+
+
+        for(uint i=0;i<_baseBytes.length;i++){
+            _newValue[ _baseBytes.length - i - 1] = _baseBytes[i];
+        }
+
+        return string(_newValue);
+    }
 }
