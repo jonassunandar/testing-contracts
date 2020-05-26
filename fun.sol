@@ -144,7 +144,7 @@ contract fun {
         return bytesToBytes32(abi.encodePacked(Addr, bytes12(0)),0);
     }
     
-    function parseId(bytes32 _id) internal pure returns (address addr, bytes12 version) {
+    function parseId(bytes32 _id) public pure returns (address addr, bytes12 version) {
         bytes32 mask12 = 0xffffffffffffffffffffffff0000000000000000000000000000000000000000;
         bytes32 mask20 = 0xffffffffffffffffffffffffffffffffffffffff000000000000000000000000;
 
@@ -183,7 +183,7 @@ contract fun {
 
         return string(_newValue);
     }
-
+    
     //source https://ethereum.stackexchange.com/questions/6591/conversion-of-uint-to-string
     function uintToBytes(uint v) pure public returns (bytes32 ret) {
         if (v == 0) {
@@ -198,7 +198,7 @@ contract fun {
         }
         return ret;
     }
-
+    
     function bytes32ToString(bytes32 x) public returns (string memory) {
         bytes memory bytesString = new bytes(32);
         uint charCount = 0;
@@ -214,5 +214,37 @@ contract fun {
             bytesStringTrimmed[j] = bytesString[j];
         }
         return string(bytesStringTrimmed);
+    }
+    
+    function bytesToBytes12(bytes memory b) public pure returns (bytes12) {
+        bytes12 out;
+        uint256 length = b.length;
+        for (uint i = 0; i < length; i++) {
+            out |= bytes12(b[i] & 0xFF) >> (i * 8);
+        }
+        return out;
+    }
+    
+    //source: https://gist.github.com/raineorshine/9af4524c0be4c83f641e80d9d9df20d9
+    /// @dev Does a byte-by-byte lexicographical comparison of two strings.
+    /// @return a negative number if `_a` is smaller, zero if they are equal
+    /// and a positive numbe if `_b` is smaller.
+    function compareString(string memory _a, string memory _b) public returns (int) {
+        bytes memory a = bytes(_a);
+        bytes memory b = bytes(_b);
+        uint minLength = a.length;
+        if (b.length < minLength) minLength = b.length;
+        //@todo unroll the loop into increments of 32 and do full 32 byte comparisons
+        for (uint i = 0; i < minLength; i ++)
+            if (a[i] < b[i])
+                return -1;
+            else if (a[i] > b[i])
+                return 1;
+        if (a.length < b.length)
+            return -1;
+        else if (a.length > b.length)
+            return 1;
+        else
+            return 0;
     }
 }
